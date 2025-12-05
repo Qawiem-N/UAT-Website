@@ -55,6 +55,9 @@ Changelog
 - Sidebar nav padding normalized and overflow guard added for wide tables/main content.
 - Moved project details to dedicated `/projects/[id]` page; projects list now shows key info with link to full detail; detail page includes edit, test cases, participants, approvals, export.
 - Removed date-fns dependency in Projects list and switched to native date formatting to fix module resolution error.
+- Sidebar transition now activates only after user toggles (prevents repeated collapse animation).
+- Sidebar collapsed state now initialized from localStorage on first render to avoid flicker when navigating.
+- Disabled sidebar transition during initial hydration to avoid jumpy collapse animation on load.
 
 2025-02-06
 - Built Supabase-backed UAT dashboard with projects, test cases, participants, execution, approvals, history, and export flows.

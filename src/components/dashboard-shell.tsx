@@ -24,22 +24,33 @@ const navItems = [
 export function DashboardShell({ title, children, actions }: { title: string; children: ReactNode; actions?: ReactNode }) {
   const pathname = usePathname();
   const { user } = useUat();
-  const [collapsed, setCollapsed] = useState<boolean>(false);
+  const [collapsed, setCollapsed] = useState<boolean>(() => {
+    if (typeof window === "undefined") return false;
+    const stored = window.localStorage.getItem("sidebar-collapsed");
+    return stored === "true";
+  });
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [animateSidebar, setAnimateSidebar] = useState(false);
+  const [hydrated, setHydrated] = useState(false);
 
   useEffect(() => {
-    if (typeof window === "undefined") return;
-    const stored = window.localStorage.getItem("sidebar-collapsed");
-    if (stored !== null) {
-      setCollapsed(stored === "true");
-    }
+    setHydrated(true);
   }, []);
 
   useEffect(() => {
-    if (typeof window !== "undefined") {
-      window.localStorage.setItem("sidebar-collapsed", String(collapsed));
-    }
-  }, [collapsed]);
+    if (!hydrated || typeof window === "undefined") return;
+    window.localStorage.setItem("sidebar-collapsed", String(collapsed));
+  }, [collapsed, hydrated]);
+
+  function toggleCollapsed() {
+    setAnimateSidebar(true);
+    setCollapsed((c) => !c);
+  }
+
+  function toggleMobile() {
+    setAnimateSidebar(true);
+    setMobileOpen((o) => !o);
+  }
 
   useEffect(() => {
     setMobileOpen(false);
@@ -78,9 +89,9 @@ export function DashboardShell({ title, children, actions }: { title: string; ch
         />
       )}
       <aside
-        className={`fixed inset-y-0 z-50 flex ${collapsed ? "w-16" : "w-64"} translate-x-0 flex-col border-r border-slate-200 bg-white/90 backdrop-blur transition-all duration-200 md:static md:translate-x-0 ${
-          mobileOpen ? "translate-x-0" : "-translate-x-full md:translate-x-0"
-        }`}
+        className={`fixed inset-y-0 z-50 flex ${collapsed ? "w-16" : "w-64"} translate-x-0 flex-col border-r border-slate-200 bg-white/90 backdrop-blur ${
+          animateSidebar ? "transition-all duration-200" : "transition-none"
+        } md:static md:translate-x-0 ${mobileOpen ? "translate-x-0" : "-translate-x-full md:translate-x-0"}`}
       >
         <div className="flex items-center justify-between px-4 py-5">
           <div className="overflow-hidden">
@@ -90,7 +101,7 @@ export function DashboardShell({ title, children, actions }: { title: string; ch
           <button
             type="button"
             aria-label={collapsed ? "Expand sidebar" : "Collapse sidebar"}
-            onClick={() => setCollapsed((c) => !c)}
+            onClick={toggleCollapsed}
             className="hidden rounded-md p-2 text-slate-600 hover:bg-slate-100 focus-visible:ring-2 focus-visible:ring-indigo-500 md:inline-flex"
             title={collapsed ? "Expand sidebar" : "Collapse sidebar"}
           >
@@ -99,7 +110,7 @@ export function DashboardShell({ title, children, actions }: { title: string; ch
           <button
             type="button"
             aria-label={mobileOpen ? "Close menu" : "Open menu"}
-            onClick={() => setMobileOpen((o) => !o)}
+            onClick={toggleMobile}
             className="rounded-md p-2 text-slate-600 hover:bg-slate-100 focus-visible:ring-2 focus-visible:ring-indigo-500 md:hidden"
           >
             {mobileOpen ? <ChevronDoubleLeftIcon className="h-5 w-5" /> : <Bars3Icon className="h-5 w-5" />}

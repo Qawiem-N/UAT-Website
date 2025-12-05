@@ -163,18 +163,21 @@ export function DashboardShell({ title, children, actions }: { title: string; ch
               </div>
             </div>
             <nav aria-label="Breadcrumb" className="flex flex-wrap items-center gap-2">
-              {breadcrumbs.map((crumb) => {
+              {breadcrumbs.map((crumb, idx) => {
                 const base = "inline-flex items-center rounded-full border px-3 py-1 text-xs font-semibold transition";
                 const activeCls = "border-indigo-100 bg-indigo-50 text-indigo-800";
                 const linkCls = "border-slate-200 bg-white text-slate-700 hover:border-indigo-200 hover:text-indigo-700";
-                return crumb.active ? (
-                  <span key={crumb.href} className={`${base} ${activeCls}`}>
-                    {crumb.label}
-                  </span>
-                ) : (
-                  <Link key={crumb.href} href={crumb.href} className={`${base} ${linkCls}`}>
-                    {crumb.label}
-                  </Link>
+                return (
+                  <div key={crumb.href} className="flex items-center gap-2">
+                    {idx > 0 && <span className="text-sm text-slate-400">{">"}</span>}
+                    {crumb.active ? (
+                      <span className={`${base} ${activeCls}`}>{crumb.label}</span>
+                    ) : (
+                      <Link href={crumb.href} className={`${base} ${linkCls}`}>
+                        {crumb.label}
+                      </Link>
+                    )}
+                  </div>
                 );
               })}
             </nav>

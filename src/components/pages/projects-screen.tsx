@@ -1,31 +1,54 @@
 "use client";
 
-import { FormEvent, useRef, useState } from "react";
+import { FormEvent, useMemo, useRef, useState } from "react";
 import Link from "next/link";
 import { DashboardShell } from "../dashboard-shell";
 import { useUat } from "../uat-provider";
 import { PlusIcon, CheckCircleIcon, XMarkIcon, ArrowTopRightOnSquareIcon } from "@heroicons/react/24/outline";
+
+const monthOptions = [
+  "January",
+  "February",
+  "March",
+  "April",
+  "May",
+  "June",
+  "July",
+  "August",
+  "September",
+  "October",
+  "November",
+  "December",
+];
 
 export default function ProjectsScreen() {
   const { projects, setActiveProjectId, createProject } = useUat();
 
   const [createForm, setCreateForm] = useState({ name: "", testVersion: "", month: "" });
   const [projectError, setProjectError] = useState<string | null>(null);
+  const [fieldErrors, setFieldErrors] = useState<{ name?: string; testVersion?: string; month?: string }>({});
   const [showModal, setShowModal] = useState(false);
   const [modalSaving, setModalSaving] = useState(false);
   const [modalSuccess, setModalSuccess] = useState<string | null>(null);
+  const [monthOpen, setMonthOpen] = useState(false);
   const dialogRef = useRef<HTMLDivElement | null>(null);
 
   async function onCreateProject(event: FormEvent) {
     event.preventDefault();
-    if (!createForm.name || !createForm.testVersion || !createForm.month) {
-      setProjectError("All fields are required.");
-      return;
-    }
+    const errors: { name?: string; testVersion?: string; month?: string } = {};
+    if (!createForm.name.trim()) errors.name = "Project Name is required.";
+    if (createForm.name.trim().length > 30) errors.name = "Project Name must be 30 characters or less.";
+    if (!createForm.testVersion.trim()) errors.testVersion = "Test Version is required.";
+    if (/[A-Za-z]/.test(createForm.testVersion)) errors.testVersion = "Test Version cannot contain letters.";
+    if (!createForm.month.trim()) errors.month = "Month is required.";
+    setFieldErrors(errors);
+    if (Object.keys(errors).length > 0) return;
+
     setModalSaving(true);
     setProjectError(null);
     await createProject(createForm);
     setCreateForm({ name: "", testVersion: "", month: "" });
+    setFieldErrors({});
     setModalSaving(false);
     setShowModal(false);
     setModalSuccess("Project created and selected.");
@@ -123,17 +146,40 @@ export default function ProjectsScreen() {
             <form className="mt-4 grid flex-1 gap-3 overflow-y-auto px-4 pb-4 sm:px-5" onSubmit={onCreateProject}>
               <Input
                 label="Project Name"
+                hint="e.g. Mobile App UAT Feb"
                 value={createForm.name}
-                onChange={(v) => setCreateForm((p) => ({ ...p, name: v }))}
+                onChange={(v) => setCreateForm((p) => ({ ...p, name: v.slice(0, 30) }))}
                 required
+                error={fieldErrors.name}
+                maxLength={30}
+                placeholder="Max 30 characters"
               />
               <Input
                 label="Test Version"
+                hint="e.g. 1.0.2-beta"
                 value={createForm.testVersion}
-                onChange={(v) => setCreateForm((p) => ({ ...p, testVersion: v }))}
+                onChange={(v) => setCreateForm((p) => ({ ...p, testVersion: v.slice(0, 30) }))}
                 required
+                error={fieldErrors.testVersion}
+                placeholder="Letters, numbers and special characters only"
+                maxLength={30}
               />
-              <Input label="Month" value={createForm.month} onChange={(v) => setCreateForm((p) => ({ ...p, month: v }))} required />
+              <Input
+                label="Month"
+                hint="e.g. March"
+                value={createForm.month}
+                onChange={(v) => {
+                  setCreateForm((p) => ({ ...p, month: v }));
+                  setMonthOpen(true);
+                }}
+                required
+                error={fieldErrors.month}
+                listId="month-options"
+                placeholder="Select or type month"
+                onBlur={() => setMonthOpen(false)}
+                dropdownOpen={monthOpen}
+                setDropdownOpen={setMonthOpen}
+              />
               {projectError && <p className="text-sm text-red-600">{projectError}</p>}
               <div className="flex flex-wrap items-center gap-2">
                 <button
@@ -160,16 +206,86 @@ export default function ProjectsScreen() {
   );
 }
 
-function Input({ label, value, onChange, required }: { label: string; value: string; onChange: (v: string) => void; required?: boolean }) {
+function Input({
+  label,
+  hint,
+  value,
+  onChange,
+  required,
+  error,
+  maxLength,
+  listId,
+  placeholder,
+  onBlur,
+  dropdownOpen,
+  setDropdownOpen,
+}: {
+  label: string;
+  hint?: string;
+  value: string;
+  onChange: (v: string) => void;
+  required?: boolean;
+  error?: string;
+  maxLength?: number;
+  listId?: string;
+  placeholder?: string;
+  onBlur?: () => void;
+  dropdownOpen?: boolean;
+  setDropdownOpen?: (open: boolean) => void;
+}) {
+  const filteredMonths = useMemo(() => {
+    if (listId !== "month-options") return monthOptions;
+    const term = value.toLowerCase();
+    if (!term.trim()) return [];
+    return monthOptions.filter((m) => m.toLowerCase().includes(term));
+  }, [listId, value]);
+
   return (
     <label className="grid gap-1 text-sm">
-      <span className="font-medium text-slate-700">{label}</span>
-      <input
-        className="rounded-md border border-slate-300 px-3 py-2"
-        value={value}
-        onChange={(e) => onChange(e.target.value)}
-        required={required}
-      />
+      <div className="flex items-center justify-between">
+        <span className="font-medium text-slate-700">{label}</span>
+        {hint && <span className="text-xs text-slate-500">{hint}</span>}
+      </div>
+      <div className="flex items-stretch gap-2">
+        <input
+          className={`flex-1 rounded-md border px-3 py-2 ${error ? "border-red-500 focus-visible:outline-red-500" : "border-slate-300"}`}
+          value={value}
+          onChange={(e) => onChange(e.target.value)}
+          required={required}
+          aria-invalid={Boolean(error)}
+          aria-describedby={error ? `${label}-error` : undefined}
+          maxLength={maxLength}
+          list={listId}
+          placeholder={placeholder}
+        onFocus={() => setDropdownOpen?.(true)}
+        onBlur={onBlur}
+        />
+      </div>
+      {error && (
+        <span id={`${label}-error`} className="text-xs text-red-600">
+          {error}
+        </span>
+      )}
+    {listId === "month-options" && dropdownOpen && filteredMonths.length > 0 && (
+        <div className="relative">
+          <div className="absolute z-50 mt-1 w-full rounded-md border border-slate-200 bg-white shadow-lg">
+            {filteredMonths.map((m) => (
+              <button
+                type="button"
+                key={m}
+                className="block w-full px-3 py-2 text-left text-sm text-slate-700 hover:bg-slate-50"
+              onMouseDown={(e) => e.preventDefault()}
+              onClick={() => {
+                onChange(m);
+                setDropdownOpen?.(false);
+              }}
+              >
+                {m}
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
     </label>
   );
 }

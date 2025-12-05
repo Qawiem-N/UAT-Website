@@ -57,6 +57,12 @@ Changelog
 - Removed date-fns dependency in Projects list and switched to native date formatting to fix module resolution error.
 - Sidebar transition now activates only after user toggles (prevents repeated collapse animation).
 - Sidebar collapsed state now initialized from localStorage on first render to avoid flicker when navigating.
+- Breadcrumbs now use pill chips with “>” separators for clarity.
+- Added per-field validation and inline errors to the Create Project modal.
+- Added limits/validation: Project Name max 30 chars, Test Version disallows letters, Month uses typeable dropdown (datalist with Tab).
+- Added inline hints plus filterable month dropdown with “Pick” button for manual selection.
+- Month dropdown now hides when empty and no longer shows a manual button (auto-filters as you type).
+- Month input now uses a single custom filtered dropdown (removed native datalist).
 - Disabled sidebar transition during initial hydration to avoid jumpy collapse animation on load.
 
 2025-02-06

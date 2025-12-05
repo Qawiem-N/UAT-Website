@@ -109,7 +109,7 @@ export default function ParticipantsScreen() {
       <section className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
         <h2 className="text-lg font-semibold">Participant List</h2>
         <div className="mt-3 overflow-hidden rounded-lg border border-slate-200">
-          <table className="min-w-full text-sm">
+          <table className="min-w-[900px] text-sm">
             <thead className="sticky top-0 bg-slate-100">
               <tr>
                 <th className="px-3 py-2 text-left font-semibold">Demo Account</th>

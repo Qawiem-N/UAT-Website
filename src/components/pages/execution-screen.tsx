@@ -7,7 +7,7 @@ import { TestCase, TestStatus } from "../../lib/types";
 const statusOptions: TestStatus[] = ["", "Pass", "Partial", "Fail", "Inapplicable"];
 
 export default function ExecutionScreen() {
-  const { testCases, saveTestCase, activeProjectId } = useUat();
+  const { testCases, saveTestCase, activeProjectId, projects, setActiveProjectId } = useUat();
 
   function onFieldChange(row: TestCase, field: keyof TestCase, value: string) {
     void saveTestCase({ ...row, [field]: value });
@@ -15,10 +15,24 @@ export default function ExecutionScreen() {
 
   return (
     <DashboardShell title="Execution">
-      <p className="text-sm text-slate-600">Only Actual Results, Status, and Remarks are editable.</p>
-      {!activeProjectId && <p className="mt-3 text-sm text-red-600">Select a project in the header to begin.</p>}
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <p className="text-sm text-slate-600">Only Actual Results, Status, and Remarks are editable.</p>
+        <select
+          className="rounded-md border border-slate-300 px-3 py-2 text-sm"
+          value={activeProjectId ?? ""}
+          onChange={(e) => setActiveProjectId(e.target.value)}
+        >
+          {projects.length === 0 && <option value="">No projects</option>}
+          {projects.map((p) => (
+            <option key={p.id} value={p.id}>
+              {p.name}
+            </option>
+          ))}
+        </select>
+      </div>
+      {!activeProjectId && <p className="mt-3 text-sm text-red-600">Select a project to begin.</p>}
       <div className="mt-4 overflow-auto rounded-xl border border-slate-200 bg-white shadow-sm">
-        <table className="min-w-full text-sm">
+        <table className="min-w-[1100px] text-sm">
           <thead className="sticky top-0 bg-slate-100">
             <tr>
               {[

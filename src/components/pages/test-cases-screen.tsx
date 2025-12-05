@@ -40,7 +40,7 @@ export default function TestCasesScreen() {
   return (
     <DashboardShell title="Test Cases" actions={<AddRowButton onClick={addRow} disabled={loading || !activeProjectId} />}>
       <div className="overflow-auto rounded-xl border border-slate-200 bg-white shadow-sm">
-        <table className="min-w-full text-sm">
+        <table className="min-w-[1100px] text-sm">
           <thead className="sticky top-0 bg-slate-100">
             <tr>
               {[

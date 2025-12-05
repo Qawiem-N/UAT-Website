@@ -82,7 +82,7 @@ export default function ApprovalsScreen() {
       <section className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
         <h2 className="text-lg font-semibold">Approval Sign-Off</h2>
         <div className="mt-3 overflow-auto rounded-lg border border-slate-200">
-          <table className="min-w-full text-sm">
+          <table className="min-w-[900px] text-sm">
             <thead className="sticky top-0 bg-slate-100">
               <tr>
                 {["Role", "Name", "Unit", "Date", "Signature Path", "Verified By", "Remarks", "Month", ""].map((title) => (

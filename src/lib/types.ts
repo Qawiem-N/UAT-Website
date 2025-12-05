@@ -59,3 +59,15 @@ export type ApprovalSignoff = {
   month: string;
 };
 
+export type ChangeLog = {
+  id: string;
+  projectId: string;
+  entity: "test_case" | "participant" | "approval_signoff" | "project";
+  entityId: string;
+  field: string;
+  oldValue: string | null;
+  newValue: string | null;
+  userName: string;
+  createdAt: string;
+};
+

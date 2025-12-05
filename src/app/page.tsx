@@ -1,7 +1,5 @@
-import { requireAuth } from "../lib/auth";
-import UatWorkspace from "../components/uat-workspace";
+import { redirect } from "next/navigation";
 
-export default async function HomePage() {
-  const user = await requireAuth();
-  return <UatWorkspace user={user} />;
+export default function HomePage() {
+  redirect("/dashboard");
 }

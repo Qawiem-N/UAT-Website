@@ -30,6 +30,23 @@ table {
   border-collapse: collapse;
 }
 
+a,
+button,
+input,
+textarea,
+select {
+  transition: all 120ms ease;
+}
+
+button:focus-visible,
+a:focus-visible,
+input:focus-visible,
+textarea:focus-visible,
+select:focus-visible {
+  outline: 2px solid #4f46e5;
+  outline-offset: 2px;
+}
+
 input,
 textarea,
 select,

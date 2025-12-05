@@ -1,36 +1,19 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+UAT Manager (Next.js)
+======================
 
-## Getting Started
+Dashboard-style UAT workspace with projects, participants, test cases, execution, approvals, history, and export backed by Supabase.
 
-First, run the development server:
+## Quickstart
+1) Install deps: `npm install`
+2) Env: set `NEXT_PUBLIC_SUPABASE_URL` and `NEXT_PUBLIC_SUPABASE_ANON_KEY` (see `IMPORTANT.md`).
+3) Apply DB schema in Supabase SQL editor: `schema/supabase-schema.sql`.
+4) Run dev server: `npm run dev` → http://localhost:3000 (redirects to `/dashboard`).
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+## Repo layout
+- `src/app/(dashboard)/*` dashboard routes
+- `src/components/pages/*` page components
+- `src/components/uat-provider.tsx` data/state provider
+- `src/lib/data-service.ts` Supabase CRUD
+- `schema/` SQL schema files
+- `IMPORTANT.md` documentation and operational notes
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
-
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
-
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
-
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
